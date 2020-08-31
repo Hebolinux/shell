@@ -9,8 +9,10 @@ sed的工作流程
 3. 按照输入的命令修改数据
 4. 将修改后的数据输出到STDOUT
 
-	\#sed从文件中读取文本时，每换一行就会重新走一遍工作流程
-	\#<font color=red>本文中提及的sed命令大多不会有写入操作，仅将结果输出到STDOUT。</font>
+	```diff
+	- sed从文件中读取文本时，每换一行就会重新走一遍工作流程<br />
+	- 本文中提及的sed命令大多不会有写入操作，仅将结果输出到STDOUT。
+	```
 
 ## 选项
 \#这里提出个别选项，仅以自身使用为准。
@@ -25,7 +27,7 @@ sed的工作流程
 $ echo "This is a test" | sed 's/test/big test/'
 This is a big test
 ```
-此例中sed使用了替换命令"s"，"s"命令将斜线间指定的第二个字符串替换第一个字符串。<br />
+此例中sed使用了替换命令"s"，"s"命令将斜线间指定的第二个字符串替换第一个字符串<br />
 ```shell
 $ cat script.sed	#创建命令文件
 s/brown/green/
@@ -34,7 +36,7 @@ s/dog/cat/
 $ echo "The quick brown fox jumps over the lazy dog." | sed -f script.sed 
 The quick green fox jumps over the lazy cat.
 ```
-此例通过命令文件对字符进行匹配和替换，有大量需要处理的sed命令时使用此方式会比较方便。<br />
+此例通过命令文件对字符进行匹配和替换，有大量需要处理的sed命令时使用此方式会比较方便<br />
 ```shell
 $ cat data.txt	#创建文本文件
 The quick brown fox jumps over the lazy dog.
@@ -95,7 +97,7 @@ $ sed 's/test/trial/w test.txt' data.txt
 This is a trial of the test script.
 This is the second trial of the test script.
 ```
-此例中使用了w替换标记，将输出到STDOUT的内容也写入了test.txt文件中，可用 cat test.txt 命令查看文本内容。
+此例中使用了w替换标记，将输出到STDOUT的内容也写入了test.txt文件中，可用 cat test.txt 命令查看文本内容
 
 ### 使用地址(区间)
 默认情况下，sed命令将会作用于文本数据的所有行，如果只想要sed命令只在某一些行内执行，则需要用到*寻址*，如果有了解过mysql的同学，那么*寻址*就类似*where*命令
@@ -188,3 +190,90 @@ This is line number 1 again.
 ...
 ```
 此例中给数据流中的文本后面添加文本，给数据流添加文本时**不能使用区间**，添加到末尾时使用"$"符即可
+
+### 修改行
+修改（change）指令允许修改数据流中整行文本的内容，与插入和附加指令的语法一致，都使用反斜杠
+```shell
+$ sed '3c\This is test' data
+...
+This is line number 2.
+This is test
+This is line number 4.
+...
+```
+此例中使用修改指令更改data文本中第3行的内容，修改指令同样可以用于文本寻址或指定区间，指定区间时结果不一定如你所料
+```shell
+$ sed '2,3c\This is test' data
+This is line number 1.
+This is test
+This is line number 4.
+...
+```
+可以看到，修改指令并不是逐一修改2到3行的内容，而是直接替换掉了数据流中的两行文本
+
+### 转换命令
+转换（transform）指令（y）是唯一可以处理单个字符的sed编辑器命令，格式如下：
+[address]y/inchars/outchars
+转换指令会对inchars和outchars的值进行一对一的替换。inchars中的第一个字符会被替换为outchars中的第一个字符，inchars中的第二个字符会被替换为outchars中的第二个字符，依次类推。如果inchars与outchars的字符长度不同，则sed编辑器会报错
+总体上来看还是替换操作，只不过替换的字符要求比较严格，需要等长字符替换
+```shell
+$ sed '2y/line/subl/' data
+This is line number 1.
+Thus us subl bumblr 2.
+This is line number 3.
+...
+```
+此例将文本内容的第二行进行字符转换
+### 打印
+标记	    | 作用
+:-:	    | :-:
+p	    | 打印文本行
+=	    | 打印行号
+l（小写的L）| 列出行
+```shell
+$ echo "this is a test" | sed 'p'
+this is a test
+this is a test
+```
+"p"所做的就是打印已有的数据文本，如果加上-n选项，表示禁止输出其他行，仅打印包含匹配文本模式的行
+```shell
+$ sed -n '/3/{p ; s/line/test/p}' data
+This is line number 3.
+This is test number 3.
+```
+此例中，首先匹配文本内容中包含了“3”的行，然后将原始行打印，执行替换操作后再次打印。<br />
+#### 打印行号
+```shell
+$ sed '=' data
+1
+This is line number 1.
+2
+This is line number 2.
+...
+```
+此例中使用“=”指令在每一行实际的文本前都打印行号<br />
+#### 列出行
+列出（list）指令（l）可以打印数据流中的文本和不可打印的ASCII字符，简单一点讲就是可以打印转义字符
+```shell
+$ echo -e "This is a\ttest" | sed "l"
+This is a\ttest$
+This is a	test
+```
+此例中第一行是列出指令输出，“l“指令可以将”\t“打印出来
+### 从文件读取数据
+文章的开头有提及过如何将数据流写入文件，而与之对应的读取（read）指令（r）允许你将一个独立的文件中的数据插入到数据流中
+```shell
+$ cat data2		#创建第二个文本文件
+This is an added line.
+This is the second added line.
+
+$ sed '3r data2' data
+...
+This is line number 3.
+This is an added line.
+This is the second added line.
+This is line number 4.
+...
+```
+此例中，sed读取了data2的文本内容，并将其插入到了data文本流的第三行后面
+sed编辑器会将数据文件（data2）中的所有行都插入到数据流（data）中
