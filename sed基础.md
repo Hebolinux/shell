@@ -56,8 +56,8 @@ s/dog/cat/' data.txt
 ---
 
 ## 替换命令及替换标记
-sed默认情况下替换命令只替换每一行中匹配到的地一个字符，替换标记是对替换命令的扩展
-在前面提及过替换命令"s","s"放在第一个斜杠的前面，替换标记则放在最后一个斜杠的后面
+sed默认情况下替换命令只替换每一行中匹配到的第一个字符，替换标记是对替换命令的扩展<br />
+在前面提及过替换命令"s","s"放在第一个斜杠的前面，替换标记则放在最后一个斜杠的后面<br />
 一个常见的带有替换标记的sed命令如下：
 ```shell
 sed 's/Search/Replacement/g' Input
@@ -100,7 +100,7 @@ This is the second trial of the test script.
 此例中使用了w替换标记，将输出到STDOUT的内容也写入了test.txt文件中，可用 cat test.txt 命令查看文本内容
 
 ### 使用地址(区间)
-默认情况下，sed命令将会作用于文本数据的所有行，如果只想要sed命令只在某一些行内执行，则需要用到*寻址*，如果有了解过mysql的同学，那么*寻址*就类似*where*命令
+默认情况下，sed命令将会作用于文本数据的所有行，如果只想要sed命令只在某一些行内执行，则需要用到*寻址*，如果有了解过mysql的同学，那么*寻址*就类似*where*命令<br />
 寻址的写法有两种：数字方式 或 文本模式
 ```shell
 $ sed '2s/This is the/Change on/' data
@@ -172,7 +172,7 @@ This is line number 4.
 ### 插入和附加文本
 + 插入（insert）指令（i）会在指定行前增加一个新行
 + 附加（append）指令（a）会在指定行后增加一个新行
-注意：插入指令和附加指令的语法与之前指令的语法有些不太一样，格式如下：
+注意：插入指令和附加指令的语法与之前指令的语法有些不太一样，格式如下：<br />
 sed '[address]command\new line'
 在命令行中使用这两个指令时不能直接使用，需要配合*打印命令*使用，如echo
 ```shell
@@ -212,9 +212,9 @@ This is line number 4.
 可以看到，修改指令并不是逐一修改2到3行的内容，而是直接替换掉了数据流中的两行文本
 
 ### 转换命令
-转换（transform）指令（y）是唯一可以处理单个字符的sed编辑器命令，格式如下：
-[address]y/inchars/outchars
-转换指令会对inchars和outchars的值进行一对一的替换。inchars中的第一个字符会被替换为outchars中的第一个字符，inchars中的第二个字符会被替换为outchars中的第二个字符，依次类推。如果inchars与outchars的字符长度不同，则sed编辑器会报错
+转换（transform）指令（y）是唯一可以处理单个字符的sed编辑器命令，格式如下：<br />
+[address]y/inchars/outchars <br />
+转换指令会对inchars和outchars的值进行一对一的替换。inchars中的第一个字符会被替换为outchars中的第一个字符，inchars中的第二个字符会被替换为outchars中的第二个字符，依次类推。如果inchars与outchars的字符长度不同，则sed编辑器会报错<br />
 总体上来看还是替换操作，只不过替换的字符要求比较严格，需要等长字符替换
 ```shell
 $ sed '2y/line/subl/' data
