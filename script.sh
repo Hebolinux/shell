@@ -4,10 +4,9 @@
 get_answer(){
 	unset ANSWER
 	ASK_COUNT=0
-	read -t 60 ANSWER
 	while [ -z $ANSWER ]
 	do
-		$ASK_COUNT=$[ $ASK_COUNT + 1 ]
+		ASK_COUNT=$[ $ASK_COUNT + 1 ]
 		case $ASK_COUNT in
 			2)
 				echo "\nWaiting for input the second time"
@@ -20,12 +19,12 @@ get_answer(){
 				exit
 				;;
 		esac
-		if [ -z $LINE2 ] 
+		if [ -n "$LINE2" ] 
 		then
-			echo -e "$LINE1 \c"
+			echo -e $LINE1" \c"
+			echo -e $LINE2" \c"
 		else
-			echo -e "$LINE1 \c"
-			echo -e "$LINE2 \c"
+			echo -e $LINE1" \c"
 		fi
 		read -t 60 ANSWER
 	done
@@ -44,7 +43,7 @@ process_answer(){
 		Y|y|YES|yes|Yes|yEs|yeS|YEs|yES|YeS)
 			;;
 		*)
-			if [ -z $EXIT_LINE2 ]
+			if [ -z "$EXIT_LINE2" ]
 			then
 				echo $EXIT_LINE1
 			else
@@ -82,7 +81,7 @@ COMMAND_2="xargs -d \\n /usr/bin/sudo /bin/kill -9"
 $COMMAND_1 > /dev/null
 case $? in
 	1)
-		echo -e "\n\e[33,1mThere are no running processes for this account.\e[0m"
+		echo -e "\n\e[33;1mThere are no running processes for this account.\e[0m"
 		;;
 	0)
 		LINE1="\nWhether to delete all processes of this account? [y/n]: "
