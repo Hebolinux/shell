@@ -53,8 +53,6 @@ s/dog/cat/' data.txt
 无论使用那一种方法都必须注意，bash一旦发现尾单引号，就会立即执行命令
 -n 选项会在后续提及 <br />
 
----
-
 ## 替换命令及替换标记
 sed默认情况下替换命令只替换每一行中匹配到的第一个字符，替换标记是对替换命令的扩展，在前面提及过替换命令"s","s"放在第一个斜杠的前面，替换标记则放在最后一个斜杠的后面，一个常见的带有替换标记的sed命令如下：
 ```shell
@@ -69,6 +67,8 @@ p     |表示print，通常与-n选项一起使用
 w file|将替换的结果写到文件中
 
 ### 替换操作(替换标记)
+由于初学sed，个人觉得sed的操作命令较多，为了便于区分和记忆，我将sed的操作命令大体上分为两种，*指令*和*标记*，*指令*位于sed命令的前端，*标记*则位于sed命令的末尾，此分类仅限于sed基础篇，有助于记忆和区分。
+例如 "$ sed 2s/source/dest/g data.txt"，此命令中，2表示寻址，s则是*指令*替换，g则是*标记*全局。这一点在下文中就不再提及
 ```shell
 $ cat data.txt	#创建新的文本文件
 This is a test of the test script.
@@ -95,7 +95,7 @@ $ sed 's/test/trial/w test.txt' data.txt
 This is a trial of the test script.
 This is the second trial of the test script.
 ```
-此例中使用了w替换标记，将输出到STDOUT的内容也写入了test.txt文件中，可用 cat test.txt 命令查看文本内容
+此例中**使用了w替换标记**，将输出到STDOUT的内容也写入了test.txt文件中，可用 cat test.txt 命令查看文本内容
 
 ### 使用地址(区间)
 默认情况下，sed命令将会作用于文本数据的所有行，如果只想要sed命令只在某一些行内执行，则需要用到*寻址*，如果有了解过mysql的同学，那么*寻址*就类似*where*命令<br />
@@ -128,9 +128,6 @@ The quick green fox jumps over the active dog
 此例中用到了组合命令，"$"表示末尾，"3,$"则表示从第3行到末尾的区间，两条替换命令都是对区间"3,$"进行操作，所以一起写在了花括号内
 
 ### 删除行
-由于初学sed，个人觉得sed的操作命令较多，为了便于区分和记忆，我将sed的操作命令大体上分为两种，*指令*和*标记*，*指令*位于sed命令的前端，*标记*则位于sed命令的末尾，此分类仅限于sed基础篇，有助于记忆和区分。
-例如 "$ sed 2s/source/dest/g data.txt"，此命令中，2表示寻址，s则是*指令*替换，g则是*标记*全局。
-这一点在下文中就不再提及，删除行就是一个操作标记
 ```shell
 $ sed 'd' data
 ```
